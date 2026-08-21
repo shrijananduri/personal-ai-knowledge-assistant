@@ -36,8 +36,18 @@ function UploadButton() {
   const [uploadStatus, setUploadStatus] = useState("");
 
   function handleFileChange(event) {
-    setFile(event.target.files[0]);
+    const selectedFile = event.target.files[0];
 
+  if (!selectedFile) {
+    return;
+  }
+
+  if (selectedFile.type !== "application/pdf") {
+    setUploadStatus("Please select a PDF file. ❌");
+    return;
+  }
+
+  setFile(selectedFile);
     const formData = new FormData();
     formData.append("file", event.target.files[0]);
 
@@ -126,7 +136,7 @@ function App() {
   
 
   function handleAsk() {
-  if (!question.trim() {
+  if (!question.trim()) {
     return;
   }
   setError("");
