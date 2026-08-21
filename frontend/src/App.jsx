@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import "./Header.css";
 
 function Header(props) {
@@ -207,8 +208,11 @@ return (
         <p className="question">You: {message.question}</p>
 
         {message.answer && (
-          <p className="answer">AI: {message.answer}</p>
-        )}
+  <div className="answer">
+    <strong>AI:</strong>
+    <ReactMarkdown>{message.answer}</ReactMarkdown>
+  </div>
+)}
       </div>
     ))}
 
