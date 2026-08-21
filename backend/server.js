@@ -5,6 +5,7 @@ const express = require("express");
 const { GoogleGenAI } = require("@google/genai");
 const multer = require("multer");
 const fs = require("fs");
+const mammoth = require("mammoth");
 const { PDFParse } = require("pdf-parse");
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
@@ -47,32 +48,57 @@ ${question}`;
 });
 
 
-app.post("/api/upload", upload.single("file"), async (req, res) => {
+app.post("/api/upload", upload.array("files", 10), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).send("No file uploaded.");
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).send("No files uploaded.");
     }
 
-    if (req.file.mimetype !== "application/pdf") {
-      return res.status(400).send("Only PDF files are allowed.");
+    let allText = "";
+
+    for (const file of req.files) {
+      const filePath = file.path;
+      const fileType = file.mimetype;
+
+      let extractedText = "";
+
+      if (fileType === "application/pdf") {
+        const dataBuffer = fs.readFileSync(filePath);
+
+        const parser = new PDFParse({ data: dataBuffer });
+
+        const result = await parser.getText();
+
+        extractedText = result.text;
+      } 
+      else if (fileType === "text/plain") {
+        extractedText = fs.readFileSync(filePath, "utf8");
+      } 
+      else if (
+        fileType ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        const result = await mammoth.extractRawText({
+          path: filePath
+        });
+
+        extractedText = result.value;
+      } 
+      else {
+        return res.status(400).send(
+          `Unsupported file type: ${file.originalname}`
+        );
+      }
+
+      allText += `\n\n--- ${file.originalname} ---\n\n${extractedText}`;
     }
 
-    console.log(req.file);
+    pdfText = allText;
 
-    const filePath = req.file.path;
-
-    const dataBuffer = fs.readFileSync(filePath);
-
-    const parser = new PDFParse({ data: dataBuffer });
-
-    const result = await parser.getText();
-
-    pdfText = result.text;
-
-    res.send("File received!");
+    res.send("Documents uploaded successfully!");
   } catch (error) {
-    console.error("PDF upload error:", error);
-    res.status(500).send("Failed to process PDF.");
+    console.error("Document processing error:", error);
+    res.status(500).send("Failed to process documents.");
   }
 });
 app.post("/api/clear-pdf", (req, res) => {

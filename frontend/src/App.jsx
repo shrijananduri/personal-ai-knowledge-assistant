@@ -33,46 +33,75 @@ function Input(props) {
 }
 
 function UploadButton() {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState([]);
   const [uploadStatus, setUploadStatus] = useState("");
 
   function handleFileChange(event) {
-    const selectedFile = event.target.files[0];
+  const selectedFiles = Array.from(event.target.files);
 
-  if (!selectedFile) {
+  if (selectedFiles.length === 0) {
     return;
   }
 
-  if (selectedFile.type !== "application/pdf") {
-    setUploadStatus("Please select a PDF file. ❌");
+  const allowedTypes = [
+    "application/pdf",
+    "text/plain",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ];
+
+  const invalidFile = selectedFiles.find(
+    (file) => !allowedTypes.includes(file.type)
+  );
+
+  if (invalidFile) {
+    setUploadStatus(
+      "Please select only PDF, TXT, or DOCX files. ❌"
+    );
     return;
   }
 
-  setFile(selectedFile);
-    const formData = new FormData();
-    formData.append("file", event.target.files[0]);
+  if (selectedFiles.length > 10) {
+    setUploadStatus("You can upload a maximum of 10 files. ❌");
+    return;
+  }
 
-    setUploadStatus("Uploading... ⏳");
+  setFile(selectedFiles);
 
-    fetch("http://localhost:5000/api/upload", {
-      method: "POST",
-      body: formData
+  const formData = new FormData();
+
+  selectedFiles.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  setUploadStatus("Uploading... ⏳");
+
+  fetch("http://localhost:5000/api/upload", {
+    method: "POST",
+    body: formData
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.text().then((message) => {
+          throw new Error(message);
+        });
+      }
+
+      return response.text();
     })
-      .then((response) => response.text())
-      .then((data) => {
-        setUploadStatus("PDF uploaded successfully! ✅");
-      })
-      .catch((error) => {
-        setUploadStatus("PDF upload failed. ❌");
-      });
-  }
+    .then(() => {
+      setUploadStatus("Documents uploaded successfully! ✅");
+    })
+    .catch((error) => {
+      setUploadStatus(error.message || "Document upload failed. ❌");
+    });
+}
   async function handleRemoveFile() {
   const response = await fetch("http://localhost:5000/api/clear-pdf", {
     method: "POST"
   });
 
   if (response.ok) {
-    setFile(null);
+    setFile([]);
     setUploadStatus("");
   }
 }
@@ -80,24 +109,27 @@ function UploadButton() {
   return (
     <>
       <input
-        id="file-upload"
-        type="file"
-        accept=".pdf"
-        onChange={handleFileChange}
-      />
+  id="file-upload"
+  type="file"
+  accept=".pdf,.txt,.docx"
+  multiple
+  onChange={handleFileChange}
+/>
 
       <label htmlFor="file-upload" className="button">
-        Upload PDF
-      </label>
+  Upload Documents
+</label>
 
-      {file && (
-  <p className="file-name">
-    📄 {file.name}
-  </p>
+      {file.length > 0 && (
+  <div className="file-name">
+    {file.map((item, index) => (
+      <p key={index}>📄 {item.name}</p>
+    ))}
+  </div>
 )}
-{file && (
+{file.length > 0 && (
   <button onClick={handleRemoveFile} className="remove-button">
-    Remove PDF
+    Remove Documents
   </button>
 )}
       {uploadStatus && <p>{uploadStatus}</p>}
