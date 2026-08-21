@@ -110,8 +110,9 @@ function AskButton(props) {
     <button
       className="button"
       onClick={handleClick}
+      disabled={props.loading}
     >
-      Ask AI
+      {props.loading ? "Thinking... ⏳" : "Ask AI"}
     </button>
   );
 }
@@ -192,7 +193,10 @@ return (
       onAsk={handleAsk}
     />
 
-    <AskButton onAsk={handleAsk} />
+    <AskButton
+  onAsk={handleAsk}
+  loading={loading}
+/>
 
     {messages.map((message, index) => (
       <div key={index} className="message">
