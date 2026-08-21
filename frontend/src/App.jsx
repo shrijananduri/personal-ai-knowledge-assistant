@@ -134,7 +134,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
-
+function handleClearChat() {
+  setMessages([]);
+  setError("");
+}
   function handleAsk() {
   if (!question.trim()) {
     return;
@@ -178,36 +181,39 @@ setLoading(true);
   setQuestion("");
 }
 
-  return (
-    <>
-      <Header title="Personal AI Knowledge Assistant" />
-      <Subtitle />
+return (
+  <>
+    <Header title="Personal AI Knowledge Assistant" />
+    <Subtitle />
 
-      <Input
-  question={question}
-  setQuestion={setQuestion}
-  onAsk={handleAsk}
-/>
+    <Input
+      question={question}
+      setQuestion={setQuestion}
+      onAsk={handleAsk}
+    />
 
-      <AskButton onAsk={handleAsk} />
+    <AskButton onAsk={handleAsk} />
 
-      {messages.map((message, index) => (
-  <div key={index} className="message">
-    <p className="question">You: {message.question}</p>
+    {messages.map((message, index) => (
+      <div key={index} className="message">
+        <p className="question">You: {message.question}</p>
 
-    {message.answer && (
-      <p className="answer">AI: {message.answer}</p>
-    )}
-  </div>
-))}
-{loading && <p>Thinking... ⏳</p>}
-{error && <p>{error}</p>}
-      <Footer />
-      <UploadButton />
-      
-    </>
-    
-  );
+        {message.answer && (
+          <p className="answer">AI: {message.answer}</p>
+        )}
+      </div>
+    ))}
+
+    {loading && <p>Thinking... ⏳</p>}
+    {error && <p>{error}</p>}
+
+    <Footer />
+    <UploadButton />
+
+    <button onClick={handleClearChat} className="clear-chat-button">
+      Clear Chat
+    </button>
+  </>
+);
 }
-
 export default App;
