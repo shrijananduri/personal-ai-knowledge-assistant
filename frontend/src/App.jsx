@@ -89,9 +89,13 @@ function UploadButton() {
         Upload PDF
       </label>
 
-      {file && <p>Selected file: {file.name}</p>}
+      {file && (
+  <p className="file-name">
+    📄 {file.name}
+  </p>
+)}
 {file && (
-  <button onClick={handleRemoveFile}>
+  <button onClick={handleRemoveFile} className="remove-button">
     Remove PDF
   </button>
 )}
@@ -125,7 +129,7 @@ function Question(props) {
 }
 
 function Footer() {
-  return <p className="footer">Made by Shrija ❤️</p>;
+  return <p className="footer"> © Made by Shrija ❤️</p>;
 }
 
 
@@ -183,7 +187,7 @@ setLoading(true);
 }
 
 return (
-  <>
+  <div className="app-container">
     <Header title="Personal AI Knowledge Assistant" />
     <Subtitle />
 
@@ -217,7 +221,7 @@ return (
     <button onClick={handleClearChat} className="clear-chat-button">
       Clear Chat
     </button>
-  </>
+  </div>
 );
 }
 export default App;

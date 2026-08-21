@@ -44,3 +44,139 @@ body {
 #file-upload {
   display: none;
 }
+.app-container {
+  width: 90%;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  box-sizing: border-box;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 32px;
+}
+
+.subtitle {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #555;
+}
+.button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.message {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.question {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.answer {
+  margin: 0;
+  line-height: 1.6;
+}.file-name {
+  margin: 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.remove-button {
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.remove-button:hover {
+  background: #f5f5f5;
+}.clear-chat-button {
+  padding: 10px 16px;
+  margin: 15px 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear-chat-button:hover {
+  background: #f5f5f5;
+}
+@media (max-width: 600px) {
+  .app-container {
+    width: 95%;
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 25px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .button,
+  .remove-button,
+  .clear-chat-button {
+    width: 100%;
+    margin: 8px 0;
+    display: block;
+    box-sizing: border-box;
+  }
+
+  .clear-chat-button {
+    margin-top: 15px;
+  }
+
+  .input {
+    font-size: 15px;
+  }
+
+  .footer {
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+
+  .file-name {
+    margin-top: 15px;
+  }
+}
