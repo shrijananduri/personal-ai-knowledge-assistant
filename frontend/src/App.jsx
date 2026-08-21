@@ -55,6 +55,16 @@ function UploadButton() {
         setUploadStatus("PDF upload failed. ❌");
       });
   }
+  async function handleRemoveFile() {
+  const response = await fetch("http://localhost:5000/api/clear-pdf", {
+    method: "POST"
+  });
+
+  if (response.ok) {
+    setFile(null);
+    setUploadStatus("");
+  }
+}
 
   return (
     <>
@@ -70,7 +80,11 @@ function UploadButton() {
       </label>
 
       {file && <p>Selected file: {file.name}</p>}
-
+{file && (
+  <button onClick={handleRemoveFile}>
+    Remove PDF
+  </button>
+)}
       {uploadStatus && <p>{uploadStatus}</p>}
     </>
   );
@@ -112,7 +126,7 @@ function App() {
   
 
   function handleAsk() {
-  if (question === "") {
+  if (!question.trim() {
     return;
   }
   setError("");
