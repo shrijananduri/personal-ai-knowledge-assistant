@@ -108,6 +108,7 @@ h1 {
 .answer {
   margin: 0;
   line-height: 1.6;
+  color: black;
 }
 .answer p {
   margin-top: 8px;
@@ -186,11 +187,16 @@ h1 {
   .file-name {
     margin-top: 15px;
   }
-}.answer h1,
-.answer h2,
-.answer h3 {
-  margin-top: 16px;
-  margin-bottom: 8px;
+}.answer {
+  margin: 0;
+  line-height: 1.6;
+  color: black;
+}
+
+.answer p {
+  margin: 8px 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .answer ul,
@@ -203,7 +209,17 @@ h1 {
   margin-bottom: 5px;
 }
 
-.answer p {
-  margin: 8px 0;
-  line-height: 1.6;
+.answer h1,
+.answer h2,
+.answer h3 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.answer p,
+.answer li,
+.answer h1,
+.answer h2,
+.answer h3 {
+  color: black;
 }
