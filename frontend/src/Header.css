@@ -1,0 +1,46 @@
+body {
+    background-color: pink;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.title {
+    color: blueviolet;
+    font-size: 40px;
+    margin-top: 40px;
+}
+
+.subtitle {
+    color: black;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.input {
+    width: 350px;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.button {
+    background-color: palevioletred;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    margin-top: 15px;
+}
+.question {
+  background-color: #f5f5f5;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+.footer {
+    margin-top: 40px;
+    color: black;
+}
+#file-upload {
+  display: none;
+}
