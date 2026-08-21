@@ -48,13 +48,32 @@ ${question}`;
 
 
 app.post("/api/upload", upload.single("file"), async (req, res) => {
-  console.log(req.file);
-  const filePath = req.file.path;
-  const dataBuffer = fs.readFileSync(filePath);
-  const parser = new PDFParse({ data: dataBuffer });
-  const result = await parser.getText();
-  pdfText = result.text;
-  res.send("File received!");
+  try {
+    if (!req.file) {
+      return res.status(400).send("No file uploaded.");
+    }
+
+    if (req.file.mimetype !== "application/pdf") {
+      return res.status(400).send("Only PDF files are allowed.");
+    }
+
+    console.log(req.file);
+
+    const filePath = req.file.path;
+
+    const dataBuffer = fs.readFileSync(filePath);
+
+    const parser = new PDFParse({ data: dataBuffer });
+
+    const result = await parser.getText();
+
+    pdfText = result.text;
+
+    res.send("File received!");
+  } catch (error) {
+    console.error("PDF upload error:", error);
+    res.status(500).send("Failed to process PDF.");
+  }
 });
 app.post("/api/clear-pdf", (req, res) => {
   pdfText = "";
