@@ -22,6 +22,47 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 
+
+// ------------------------------------
+// GEMINI RETRY HANDLER
+// ------------------------------------
+
+async function generateAnswer(prompt, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: prompt
+      });
+
+    } catch (error) {
+
+      const isTemporaryError =
+        error.status === 503 ||
+        error.status === 429;
+
+      if (
+        !isTemporaryError ||
+        attempt === maxRetries
+      ) {
+        throw error;
+      }
+
+      console.log(
+        `Gemini temporarily unavailable. Retrying (${attempt}/${maxRetries})...`
+      );
+
+      await new Promise((resolve) =>
+        setTimeout(
+          resolve,
+          1500 * attempt
+        )
+      );
+    }
+  }
+}
+
+
 const app = express();
 
 const upload = multer({
@@ -39,7 +80,9 @@ app.use(express.json());
 qdrant
   .getCollections()
   .then(() => {
-    console.log("Qdrant connected successfully!");
+    console.log(
+      "Qdrant connected successfully!"
+    );
   })
   .catch((error) => {
     console.error(
@@ -82,6 +125,7 @@ app.get("/", (req, res) => {
 
 app.post("/api/ask", async (req, res) => {
   try {
+
     const question = req.body.question;
     const messages = req.body.messages || [];
 
@@ -91,27 +135,33 @@ app.post("/api/ask", async (req, res) => {
       );
     }
 
+
     // -------------------------------
     // PREVIOUS CONVERSATION
     // -------------------------------
 
-    const recentMessages = messages.slice(-6, -1);
+    const recentMessages =
+      messages.slice(-6, -1);
 
-    const conversation = recentMessages
-      .map(
-        (message) =>
-          `User: ${message.question}\nAI: ${message.answer}`
-      )
-      .join("\n");
+    const conversation =
+      recentMessages
+        .map(
+          (message) =>
+            `User: ${message.question}\nAI: ${message.answer}`
+        )
+        .join("\n");
+
 
     // -------------------------------
     // RETRIEVE DOCUMENT CHUNKS
     // -------------------------------
 
-    const relevantChunks = await retrieveChunks(
-      question,
-      5
-    );
+    const relevantChunks =
+      await retrieveChunks(
+        question,
+        5
+      );
+
 
     // -------------------------------
     // NO RELEVANT INFORMATION
@@ -126,21 +176,24 @@ app.post("/api/ask", async (req, res) => {
       );
     }
 
+
     // -------------------------------
     // BUILD CONTEXT
     // -------------------------------
 
-    const context = relevantChunks
-      .map(
-        (chunk, index) =>
-          `[Source ${index + 1}]
+    const context =
+      relevantChunks
+        .map(
+          (chunk, index) =>
+            `[Source ${index + 1}]
 File: ${chunk.fileName}
 Chunk: ${chunk.chunkIndex}
 
 Content:
 ${chunk.text}`
-      )
-      .join("\n\n");
+        )
+        .join("\n\n");
+
 
     // -------------------------------
     // GEMINI PROMPT
@@ -176,41 +229,60 @@ Current user question:
 
 ${question}`;
 
+
     // -------------------------------
-    // GEMINI RESPONSE
+    // GEMINI RESPONSE WITH RETRIES
     // -------------------------------
 
     const response =
-      await ai.models.generateContent({
-        model: "gemini-3.6-flash",
-        contents: prompt
-      });
+      await generateAnswer(prompt);
+
 
     // -------------------------------
     // SOURCES
     // -------------------------------
 
-    const sources = relevantChunks
-      .map(
-        (chunk) =>
-          `📄 ${chunk.fileName} — Chunk ${chunk.chunkIndex}`
-      )
-      .join("\n");
+    const sources =
+  relevantChunks
+    .map(
+      (chunk) =>
+        `- ${chunk.fileName} · Chunk ${chunk.chunkIndex}`
+    )
+    .join("\n");
 
-    // -------------------------------
-    // FINAL RESPONSE
-    // -------------------------------
-
-    const finalResponse =
-      `${response.text}\n\n### Sources\n${sources}`;
+const finalResponse =
+  `${response.text}\n\n### Sources\n${sources}`;
 
     res.send(finalResponse);
 
   } catch (error) {
+
     console.error(
       "Question answering error:",
       error
     );
+
+
+    // -------------------------------
+    // USER-FRIENDLY GEMINI ERROR
+    // -------------------------------
+
+    if (
+      error.status === 503
+    ) {
+      return res.status(503).send(
+        "Gemini is temporarily unavailable due to high demand. Please try again in a moment."
+      );
+    }
+
+    if (
+      error.status === 429
+    ) {
+      return res.status(429).send(
+        "Gemini is temporarily rate-limited. Please try again in a moment."
+      );
+    }
+
 
     res.status(500).send(
       "Failed to answer the question."
@@ -227,7 +299,9 @@ app.post(
   "/api/upload",
   upload.array("files", 10),
   async (req, res) => {
+
     try {
+
       if (
         !req.files ||
         req.files.length === 0
@@ -237,15 +311,18 @@ app.post(
         );
       }
 
+
       // -------------------------------
       // PROCESS EACH FILE
       // -------------------------------
 
       for (const file of req.files) {
+
         const filePath = file.path;
         const fileType = file.mimetype;
 
         let extractedText = "";
+
 
         // -----------------------------
         // PDF
@@ -254,18 +331,22 @@ app.post(
         if (
           fileType === "application/pdf"
         ) {
+
           const dataBuffer =
             fs.readFileSync(filePath);
 
-          const parser = new PDFParse({
-            data: dataBuffer
-          });
+          const parser =
+            new PDFParse({
+              data: dataBuffer
+            });
 
           const result =
             await parser.getText();
 
-          extractedText = result.text;
+          extractedText =
+            result.text;
         }
+
 
         // -----------------------------
         // TXT
@@ -274,12 +355,14 @@ app.post(
         else if (
           fileType === "text/plain"
         ) {
+
           extractedText =
             fs.readFileSync(
               filePath,
               "utf8"
             );
         }
+
 
         // -----------------------------
         // DOCX
@@ -289,23 +372,28 @@ app.post(
           fileType ===
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         ) {
+
           const result =
             await mammoth.extractRawText({
               path: filePath
             });
 
-          extractedText = result.value;
+          extractedText =
+            result.value;
         }
+
 
         // -----------------------------
         // UNSUPPORTED FILE
         // -----------------------------
 
         else {
+
           return res.status(400).send(
             `Unsupported file type: ${file.originalname}`
           );
         }
+
 
         // -----------------------------
         // CHUNK DOCUMENT
@@ -313,6 +401,7 @@ app.post(
 
         const chunks =
           chunkText(extractedText);
+
 
         // -----------------------------
         // STORE CHUNKS IN QDRANT
@@ -322,13 +411,22 @@ app.post(
           chunks,
           file.originalname
         );
+
+
+        // -----------------------------
+        // DELETE TEMPORARY FILE
+        // -----------------------------
+
+        fs.unlinkSync(filePath);
       }
-      fs.unlinkSync(filePath);
+
+
       res.send(
         "Documents uploaded and indexed successfully!"
       );
 
     } catch (error) {
+
       console.error(
         "Document processing error:",
         error
@@ -349,7 +447,9 @@ app.post(
 app.post(
   "/api/clear-pdf",
   async (req, res) => {
+
     try {
+
       await clearCollection();
 
       res.send(
@@ -357,6 +457,7 @@ app.post(
       );
 
     } catch (error) {
+
       console.error(
         "Error clearing documents:",
         error
