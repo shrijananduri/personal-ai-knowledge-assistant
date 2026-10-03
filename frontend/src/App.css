@@ -975,3 +975,206 @@ input {
     font-size: 15px;
   }
 }
+/* =====================================
+   INDEXED DOCUMENTS
+===================================== */
+
+.documents-panel {
+  width: min(920px, calc(100% - 64px));
+  margin: 14px auto 0;
+  padding: 10px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e8ebef;
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.03);
+
+  box-sizing: border-box;
+}
+
+
+/* Document heading */
+
+.documents-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  flex-shrink: 0;
+
+  margin: 0;
+
+  color: #59636f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* Document count */
+
+.document-count {
+  min-width: 20px;
+  height: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+
+  border-radius: 6px;
+
+  background: #f1f5ff;
+  color: #2563eb;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+/* Document list */
+
+.documents-list {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  overflow-x: auto;
+
+  scrollbar-width: none;
+}
+
+.documents-list::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Individual document */
+
+.document-item {
+  min-width: 0;
+  max-width: 230px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 6px 10px;
+
+  background: #f8fafc;
+  border: 1px solid #edf0f3;
+  border-radius: 7px;
+
+  color: #68727e;
+
+  font-size: 12px;
+  line-height: 1;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+/* Document icon */
+
+.document-item svg {
+  flex-shrink: 0;
+  color: #8a94a1;
+}
+
+
+/* Filename */
+
+.document-item span {
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* Hover */
+
+.document-item:hover {
+  background: #ffffff;
+  border-color: #dfe4ea;
+
+  box-shadow:
+    0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  .documents-panel {
+    width: calc(100% - 24px);
+    margin-top: 10px;
+    padding: 9px 10px;
+
+    gap: 10px;
+  }
+
+  .documents-header {
+    font-size: 11px;
+  }
+
+  .document-item {
+    max-width: 190px;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}
+/* =====================================
+   DOCUMENT DELETE BUTTON
+===================================== */
+
+.document-delete-button {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-left: auto;
+  padding: 0;
+
+  border: none;
+  border-radius: 5px;
+
+  background: transparent;
+  color: #9aa2ad;
+
+  font-size: 16px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.document-delete-button:hover {
+  background: #f1f3f5;
+  color: #ef4444;
+}
+
+.document-delete-button:active {
+  background: #e5e7eb;
+}
