@@ -1,24 +1,34 @@
 # Personal AI Knowledge Assistant
 
-An AI-powered PDF assistant that allows users to upload a PDF and ask questions about its content using natural language.
+A document-grounded AI assistant that allows users to upload PDF, DOCX, and TXT files and ask questions about their content.
+
+The application uses Retrieval-Augmented Generation (RAG) with Gemini embeddings and Qdrant vector search to retrieve relevant document chunks before generating an answer. The assistant uses the uploaded documents as its knowledge source and provides the retrieved sources along with each response.
 
 ## ✨ Features
 
-- 📄 Upload PDF documents
-- 🤖 Ask questions about uploaded PDFs
+- 📄 Upload PDF, DOCX, and TXT documents
+- 📚 Upload multiple documents
+- ✂️ Extract and chunk document text
+- 🧠 Generate embeddings using Gemini
+- 🗄️ Store document embeddings in Qdrant
+- 🔎 Semantic vector search
+- 🔀 Hybrid semantic + keyword retrieval
 - 💬 Maintain conversation context
-- 📝 Markdown-formatted AI responses
-- 🗑️ Remove uploaded PDFs
-- 🧹 Clear chat history
+- 🤖 Document-grounded AI responses
+- 📚 Source citations for generated answers
+- 👀 View retrieved source chunks
+- 🗑️ Delete individual documents
+- 🧹 Clear all indexed documents
+- 🧼 Clear chat history
 - 🚫 Prevent empty questions
-- ✅ Validate PDF file uploads
-- ⏳ Loading state while AI generates responses
-- 📱 Responsive UI for desktop and mobile
 - ⚠️ Frontend and backend error handling
+- 🔄 Automatic Gemini model fallback
+- 📱 Responsive user interface
 
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - React
 - Vite
 - JavaScript
@@ -26,31 +36,49 @@ An AI-powered PDF assistant that allows users to upload a PDF and ask questions 
 - React Markdown
 
 ### Backend
+
 - Node.js
 - Express.js
 - Multer
-- PDF text extraction
 
 ### AI
-- Google Gemini API
 
-## 🏗️ Project Structure
+- Google Gemini API
+- Gemini Embeddings
+
+### Vector Database
+
+- Qdrant
+
+### Document Processing
+
+- PDF text extraction
+- Mammoth for DOCX text extraction
+- TXT text processing
+
+## 🧠 RAG Architecture
+
+The application uses Retrieval-Augmented Generation (RAG) to answer questions using information from uploaded documents.
 
 ```text
-Personal-AI/
-│
-├── backend/
-│   ├── server.js
-│   ├── package.json
-│   └── .gitignore
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── Header.css
-│   │   └── ...
-│   ├── package.json
-│   └── ...
-│
-├── .gitignore
-└── README.md
+                Document Upload
+                       ↓
+                Text Extraction
+                       ↓
+                    Chunking
+                       ↓
+              Gemini Embeddings
+                       ↓
+                Qdrant Vector DB
+                       ↓
+                User Question
+                       ↓
+             Question Embedding
+                       ↓
+              Hybrid Retrieval
+                       ↓
+              Relevant Chunks
+                       ↓
+             Gemini Generation
+                       ↓
+                Answer + Sources
